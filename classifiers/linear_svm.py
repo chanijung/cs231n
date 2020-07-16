@@ -92,9 +92,8 @@ def svm_loss_vectorized(W, X, y, reg):
     delta[range(delta.shape[0]),y] = 0
     scores_diff = scores_correct.reshape(scores.shape[0],1) - scores
     margins = np.maximum(0, delta-scores_diff)
+    print(margins)
 #     loss_mat = np.array([(1-x)*(x<1) for x in scores_diff])
-#     dl_ds = np.array([(x<1) for x in scores_diff])
-#     dl_ds = np.array([
 #     loss = (np.sum(loss_mat)-num_train)/num_train + reg*np.sum(W*W)
     loss = np.sum(margins)/num_train + reg*np.sum(W*W)
     
@@ -112,8 +111,13 @@ def svm_loss_vectorized(W, X, y, reg):
     # loss.                                                                     #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-
-    pass
+    dl_ds = (margins>0).astype(float)
+#     dl_ds = np.array([(x<1) for x in scores_diff])
+    dl_ds[range(dl_ds.shape[0]), y] = (-1)*dl_ds.sum(axis=1)
+    dl_ds /= num_train
+    dW = X.T.dot(dl_ds)
+    
+    
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
